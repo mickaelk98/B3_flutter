@@ -9,6 +9,7 @@ class ContactPage extends StatefulWidget {
 
 class _ContactPageState extends State<ContactPage> {
   final _formKey = GlobalKey<FormState>();
+  // initialise les controllers pour recupérer les données du formulaire
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
@@ -19,7 +20,7 @@ class _ContactPageState extends State<ContactPage> {
     _loadFormData();
   }
 
-  // Charger les données enregistrées localement
+  // Recupere données enregistrées localement
   Future<void> _loadFormData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -37,10 +38,10 @@ class _ContactPageState extends State<ContactPage> {
     prefs.setString('message', _messageController.text);
   }
 
-  // Soumettre le formulaire
+  // Fonction de soumission du formulaire
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      await _saveFormData(); // Sauvegarde avant envoi
+      await _saveFormData(); // Sauvegarde les données du formulaires
 
       // Envoi de l'email via la fonction sendEmail
       await sendEmail(
@@ -49,21 +50,21 @@ class _ContactPageState extends State<ContactPage> {
         message: _messageController.text,
       );
 
-      // Réinitialiser les champs après envoi
+      // Réinitialise les champs du formulaire après l'envoi
       _nameController.clear();
       _emailController.clear();
       _messageController.clear();
 
-      // Supprimer les valeurs sauvegardées
+      // Supprime les valeurs sauvegardées localement
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('name');
       await prefs.remove('email');
       await prefs.remove('message');
 
-      // Forcer la mise à jour de l'UI
+      // Mets a jour l'interface
       setState(() {});
 
-      // Afficher un message de confirmation
+      // Affiche un message de confirmation
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Message envoyé avec succès !')),
       );
