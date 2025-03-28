@@ -1,23 +1,121 @@
 import 'package:flutter/material.dart';
+import 'package:b3_dev/view/articles.dart';
+import 'package:b3_dev/view/contact.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // Variable pour gérer l'état du mode sombre
+  bool _isDarkMode = false;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'App B3 MDS',
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter',
+      // Thème dynamique en fonction de _isDarkMode
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 9, 9, 216)),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
+        brightness: _isDarkMode ? Brightness.dark : Brightness.light,
       ),
-      debugShowCheckedModeBanner: false, 
-      home: const Text('null'),
+      darkTheme: ThemeData.dark(), // Définir le thème sombre par défaut
+      themeMode:
+          _isDarkMode ? ThemeMode.dark : ThemeMode.light, // Changer le mode
+      home: MyHomePage(
+        onThemeChanged: (bool value) {
+          setState(() {
+            _isDarkMode = value; // Mettre à jour l'état du mode sombre
+          });
+        },
+      ),
+    );
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  final Function(bool) onThemeChanged;
+
+  MyHomePage({required this.onThemeChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter Drawer Demo'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Drawer',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Articles'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ArticlesPage()),
+                );
+              },
+            ),
+            ListTile(
+              title: Text('Contact'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ContactPage()),
+                );
+              },
+            ),
+            ListTile(
+              title: Text("Change Theme"),
+              trailing: Switch(
+                value: Theme.of(context).brightness ==
+                    Brightness.dark, // Vérifie si le mode sombre est activé
+                onChanged: (bool value) {
+                  onThemeChanged(value); // Notifie le parent du changement
+                },
+              ),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Bienvenue sur mon application flutter, l\'objectif de cette application est d\'apprendre a utiliser flutter via different exercice',
+            ),
+            Image(image: AssetImage('assets/images/bg.jpg')),
+          ],
+        ),
+      ),
     );
   }
 }
