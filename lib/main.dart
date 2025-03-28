@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:b3_dev/view/articles.dart';
-import 'package:b3_dev/view/contact.dart';
+import 'package:b3_dev/view/contact_page.dart';
+import 'package:b3_dev/view/articles_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,11 +27,11 @@ class _MyAppState extends State<MyApp> {
       ),
       darkTheme: ThemeData.dark(), // Définir le thème sombre par défaut
       themeMode:
-          _isDarkMode ? ThemeMode.dark : ThemeMode.light, // Changer le mode
+          _isDarkMode ? ThemeMode.dark : ThemeMode.light, // Changer le theme
       home: MyHomePage(
         onThemeChanged: (bool value) {
           setState(() {
-            _isDarkMode = value; // Mettre à jour l'état du mode sombre
+            _isDarkMode = value; // Mets a jour le theme
           });
         },
       ),
@@ -54,6 +54,7 @@ class MyHomePage extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
+            //listes des widgets du drawer
             DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
@@ -75,6 +76,7 @@ class MyHomePage extends StatelessWidget {
             ListTile(
               title: Text('Articles'),
               onTap: () {
+                //Redirige vers la page des articles au clique
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ArticlesPage()),
@@ -84,6 +86,7 @@ class MyHomePage extends StatelessWidget {
             ListTile(
               title: Text('Contact'),
               onTap: () {
+                //Redirige vers la page contact au clique
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ContactPage()),
@@ -96,7 +99,7 @@ class MyHomePage extends StatelessWidget {
                 value: Theme.of(context).brightness ==
                     Brightness.dark, // Vérifie si le mode sombre est activé
                 onChanged: (bool value) {
-                  onThemeChanged(value); // Notifie le parent du changement
+                  onThemeChanged(value);
                 },
               ),
               onTap: () {},
@@ -106,8 +109,8 @@ class MyHomePage extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center, //Centre le contenu
+          crossAxisAlignment: CrossAxisAlignment.center, //Centre le contenu
           children: [
             Text(
               'Bienvenue sur mon application flutter, l\'objectif de cette application est d\'apprendre a utiliser flutter via different exercice',
