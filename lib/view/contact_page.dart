@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/send_email.dart'; // Import de ta fonction d'envoi d'email
 
 class ContactPage extends StatefulWidget {
   @override
@@ -11,13 +13,60 @@ class _ContactPageState extends State<ContactPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
 
-  void _submitForm() {
+  @override
+  void initState() {
+    super.initState();
+    _loadFormData();
+  }
+
+  // Charger les données enregistrées localement
+  Future<void> _loadFormData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _nameController.text = prefs.getString('name') ?? '';
+      _emailController.text = prefs.getString('email') ?? '';
+      _messageController.text = prefs.getString('message') ?? '';
+    });
+  }
+
+  // Sauvegarder les données localement
+  Future<void> _saveFormData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('name', _nameController.text);
+    prefs.setString('email', _emailController.text);
+    prefs.setString('message', _messageController.text);
+  }
+
+  // Soumettre le formulaire
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Envoyer les données
+      await _saveFormData(); // Sauvegarde avant envoi
+
+      // Envoi de l'email via la fonction sendEmail
+      await sendEmail(
+        name: _nameController.text,
+        email: _emailController.text,
+        message: _messageController.text,
+      );
+
+      // Réinitialiser les champs après envoi
+      _nameController.clear();
+      _emailController.clear();
+      _messageController.clear();
+
+      // Supprimer les valeurs sauvegardées
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('name');
+      await prefs.remove('email');
+      await prefs.remove('message');
+
+      // Forcer la mise à jour de l'UI
+      setState(() {});
+
+      // Afficher un message de confirmation
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Message envoyé avec succès !')),
       );
-      _formKey.currentState!.reset();
     }
   }
 
@@ -26,12 +75,11 @@ class _ContactPageState extends State<ContactPage> {
     return Scaffold(
       appBar: AppBar(title: Text('Contactez-nous')),
       body: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
                 controller: _nameController,
@@ -46,6 +94,7 @@ class _ContactPageState extends State<ContactPage> {
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Veuillez entrer votre email';
